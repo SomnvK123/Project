@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -45,5 +46,24 @@ public class ProductController {
     public Products findProducts(@PathVariable String textfind) {
         Products products = productService.findProducts(textfind);
         return products;
+    }
+
+    @PutMapping("/update/{id}")
+    @Transactional
+    public ResponseEntity<?> updateProducts(@RequestBody ProductsDto productDto, @PathVariable Integer id) {
+        Products product = productService.updateProducts(id, productDto);
+        if (product == null) {
+            return ResponseEntity.status(404).body("Product not found");
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("Product updated successfully: " + product);
+    }
+
+    @PutMapping("/softdelete/{id}")
+    @Transactional
+    public ResponseEntity<?> softDeleteProducts(@PathVariable Integer id) {
+        productService.softDeleteProducts(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("Product deleted successfully");
     }
 }

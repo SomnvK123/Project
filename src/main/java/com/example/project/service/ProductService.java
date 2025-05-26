@@ -1,7 +1,10 @@
 package com.example.project.service;
 
 import com.example.project.dto.ProductsDto;
+import com.example.project.model.PackageProducts;
 import com.example.project.model.Products;
+import com.example.project.model.Users;
+import com.example.project.repository.PackagesRepository;
 import com.example.project.repository.ProductsRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,9 @@ public class ProductService {
 
     @Autowired
     private ProductsRepository productsRepository;
+
+    @Autowired
+    private PackagesRepository packagesRepository;
 
     public Page<Products> getAllProducts(Pageable pageable) {
         return productsRepository.findAll(pageable);
@@ -49,21 +55,53 @@ public class ProductService {
         }
     }
 
-    private static Products getProducts(ProductsDto productDto) {
+    private Products getProducts(ProductsDto dto) {
         Products product = new Products();
-        product.setName(productDto.getName());
-        product.setPrice(productDto.getPrice());
-        product.setName(productDto.getName());
-        product.setPrice(productDto.getPrice());
-        product.setBarcode(productDto.getBarcode());
-        product.setImage(productDto.getImage());
-        product.setWeight(productDto.getWeight());
-        product.setHeight(productDto.getHeight());
-        product.setWidth(productDto.getWidth());
-        product.setLength(productDto.getLength());
-        product.setDeleted(false);
-        product.setStatus(true);
+        product.setName(dto.getName());
+        product.setBarcode(dto.getBarcode());
+        product.setImage(dto.getImage());
+        product.setWeight(dto.getWeight());
+        product.setHeight(dto.getHeight());
+        product.setWidth(dto.getWidth());
+        product.setLength(dto.getLength());
+        product.setPrice(dto.getPrice());
+        product.setDeleted(dto.isDeleted());
+        product.setStatus(dto.getStatus());
+        if (dto.getUsersId() != null) {
+            Users user = new Users();
+            user.setId(dto.getUsersId());
+            product.setUsers(user);
+        }
         return product;
     }
 
+
+    @Transactional
+    public Products updateProducts(int id, ProductsDto productDto) {
+        boolean exists = packagesRepository.countPackagesWithProduct(id) > 0;
+        if (exists) {
+            throw new IllegalStateException(" Không thể cập nhật sản phẩm nếu sản phẩm đang nằm trong đơn có trạng thái 5, 7, 11");
+        }
+        Products product = productsRepository.findById(id).orElse(null);
+        if (product != null) {
+            product.setName(productDto.getName());
+            product.setPrice(productDto.getPrice());
+            product.setBarcode(productDto.getBarcode());
+            product.setImage(productDto.getImage());
+            product.setWeight(productDto.getWeight());
+            product.setHeight(productDto.getHeight());
+            product.setWidth(productDto.getWidth());
+            product.setLength(productDto.getLength());
+            product.setDeleted(false);
+        }
+        return productsRepository.save(product);
+    }
+
+    @Transactional
+    public void softDeleteProducts(int id) {
+        Products product = productsRepository.findById(id).orElse(null);
+        if (product != null) {
+            product.setDeleted(true);
+        }
+    }
 }

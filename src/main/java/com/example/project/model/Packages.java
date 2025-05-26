@@ -1,6 +1,5 @@
 package com.example.project.model;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,14 +9,14 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "products")
-public class Products extends Auditing{
+@Getter
+@Setter
+@Table(name = "packages")
+public class Packages extends Auditing {
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String name;
@@ -31,11 +30,7 @@ public class Products extends Auditing{
     private boolean isDeleted = false;
     private Integer status;
 
-
-    @ManyToOne
-    @JoinColumn(name = "users_id")
-    private Users users;
-
-    @OneToMany(mappedBy = "product")
+    // Additional fields or methods can be added here if necessary
+    @OneToMany(mappedBy = "aPackage")
     private List<PackageProducts> packageProducts;
 }

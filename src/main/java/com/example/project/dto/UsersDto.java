@@ -1,11 +1,15 @@
 package com.example.project.dto;
 
 import com.example.project.model.Users;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * DTO for {@link Users}
@@ -54,5 +58,4 @@ public class UsersDto implements Serializable {
     public String getRole() {
         return role;
     }
-
 }

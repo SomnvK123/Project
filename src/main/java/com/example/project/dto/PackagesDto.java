@@ -1,22 +1,26 @@
 package com.example.project.dto;
 
-import com.example.project.model.Products;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import com.example.project.model.Packages;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Value;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
- * DTO for {@link Products}
+ * DTO for {@link Packages}
  */
 @Getter
 @Setter
 @AllArgsConstructor
-public class ProductsDto implements Serializable {
-    @NotBlank(message = "Not Blank")
+
+public class PackagesDto implements Serializable {
+    private LocalDateTime createdDate;
+    private LocalDateTime lastModifiedDate;
+    private int id;
     private String name;
-    @NotBlank(message = "Not Blank")
     private String barcode;
     private String image;
     private double weight;
@@ -26,6 +30,4 @@ public class ProductsDto implements Serializable {
     private double price;
     private boolean isDeleted;
     private Integer status;
-
-    @JsonProperty("users_id")
-    private Integer usersId;}
+}
