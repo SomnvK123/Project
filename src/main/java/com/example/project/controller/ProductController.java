@@ -40,4 +40,10 @@ public class ProductController {
         Page<Products> products = productService.getAllProducts(pageable);
         return ResponseEntity.ok(products);
     }
+
+    @GetMapping("/find/{textfind}")
+    public Products findProducts(@PathVariable String textfind) {
+        Products products = productService.findProducts(textfind);
+        return products;
+    }
 }

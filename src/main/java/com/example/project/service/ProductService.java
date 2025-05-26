@@ -7,6 +7,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,6 +38,14 @@ public class ProductService {
         }
         if(!products.isEmpty()) {
             productsRepository.saveAll(products);
+        }
+    }
+
+    public Products findProducts(String textfind) {
+        if (textfind.startsWith("BC")) {
+            return productsRepository.findByBarcode(textfind);
+        } else {
+            return productsRepository.findByName(textfind);
         }
     }
 
