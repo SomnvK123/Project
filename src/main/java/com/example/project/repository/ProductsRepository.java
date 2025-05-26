@@ -21,8 +21,4 @@ public interface ProductsRepository extends JpaRepository<Products, Integer> {
 
     @Query(nativeQuery = true, value = "SELECT * FROM products WHERE barcode = ?1")
     Products findByBarcode(String barcode);
-
-    @Modifying
-    @Query(nativeQuery = true, value = "UPDATE products SET is_deleted = 1 WHERE id = ?1")
-    void softDelete(int id);
 }

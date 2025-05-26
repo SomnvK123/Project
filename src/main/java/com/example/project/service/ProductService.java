@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -99,9 +100,13 @@ public class ProductService {
 
     @Transactional
     public void softDeleteProducts(int id) {
-        Products product = productsRepository.findById(id).orElse(null);
-        if (product != null) {
-            product.setDeleted(true);
+       Optional<Products> product = productsRepository.findById(id);
+        if (product.isPresent()) {
+            Products products = product.get();
+            products.setDeleted(true);
+            productsRepository.save(products);
+        } else {
+            throw new IllegalStateException("Sản phẩm không tồn tại");
         }
     }
 }
