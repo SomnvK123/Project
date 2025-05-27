@@ -6,6 +6,10 @@ select * from products;
 select * from packages;
 select * from package_products;
 
+   SELECT CONSTRAINT_NAME, CHECK_CLAUSE
+   FROM INFORMATION_SCHEMA.CHECK_CONSTRAINTS
+   WHERE CONSTRAINT_NAME = 'products_chk_2';
+
 -- Xóa bảng liên kết trước (do có foreign key đến các bảng khác)
 DROP TABLE IF EXISTS package_products;
 
@@ -83,6 +87,10 @@ CREATE TABLE package_products (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+ALTER TABLE package_products
+ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
 -- insert users
 INSERT INTO users (tel, password, name, address, status, role)
 VALUES
@@ -139,6 +147,13 @@ VALUES
 (7, 8, 1),
 (8, 9, 3),
 (9, 10, 1);
+
+SELECT count(*)
+FROM package_products pp
+JOIN packages p ON pp.package_id = p.id
+WHERE pp.product_id = 3 AND p.status IN (5, 7, 11);
+
+
 
 
 
