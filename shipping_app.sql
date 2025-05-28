@@ -58,6 +58,8 @@ CREATE TABLE products (
     FOREIGN KEY (users_id) REFERENCES users(id)
 );
 
+describe packages;
+
 -- 1.3. Bảng packages
 CREATE TABLE packages (
     id INT AUTO_INCREMENT PRIMARY KEY,

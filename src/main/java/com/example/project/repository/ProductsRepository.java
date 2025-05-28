@@ -11,14 +11,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ProductsRepository extends JpaRepository<Products, Integer> {
 
     @Query(nativeQuery = true, value = "SELECT * FROM products WHERE name = ?1")
-    Products findByName(String name);
+    Optional<Products> findByName(String name);
 
     Page<Products> findAll(Pageable pageable);
 
     @Query(nativeQuery = true, value = "SELECT * FROM products WHERE barcode = ?1")
-    Products findByBarcode(String barcode);
+    Optional<Products> findByBarcode(String barcode);
 }

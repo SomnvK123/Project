@@ -1,7 +1,6 @@
 package com.example.project.service;
 
 import com.example.project.dto.ProductsDto;
-import com.example.project.model.PackageProducts;
 import com.example.project.model.Products;
 import com.example.project.model.Users;
 import com.example.project.repository.PackagesRepository;
@@ -10,8 +9,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,8 +33,8 @@ public class ProductService {
     public void batchInsertProducts(List<ProductsDto> productsDto) {
         List<Products> products = new ArrayList<>();
         for (ProductsDto productDto : productsDto) {
-            Products existingProduct = productsRepository.findByName(productDto.getName());
-            if (existingProduct != null) {
+            Optional<Products> existingProduct = productsRepository.findByName(productDto.getName());
+            if (existingProduct.isPresent()) {
                 continue;
             }
             Products product = getProducts(productDto);
@@ -48,7 +45,7 @@ public class ProductService {
         }
     }
 
-    public Products findProducts(String textfind) {
+    public Optional<Products> findProducts(String textfind) {
         if (textfind.startsWith("BC")) {
             return productsRepository.findByBarcode(textfind);
         } else {

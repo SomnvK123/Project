@@ -19,14 +19,15 @@ public class Packages extends Auditing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String name;
-    private String barcode;
-    private String image;
-    private double weight;
-    private double height;
-    private double width;
-    private double length;
-    private double price;
+    private String pickAddress;           // pick_address
+    private String customerName;          // customer_name
+    private String customerAddress;       // customer_address
+    private String customerTel;           // customer_tel
+    private Double pickMoney;             // tiền thu hộ
+    private Double value;                 // Tổng giá trị hàng hóa
+    private Double shipMoney;             // phí vận chuyển
+    private Double extraFee;              // phụ phí vận chuyển
+    private Double weight;
     private boolean isDeleted = false;
     private Integer status;
 

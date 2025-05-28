@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
@@ -43,8 +44,8 @@ public class ProductController {
     }
 
     @GetMapping("/find/{textfind}")
-    public Products findProducts(@PathVariable String textfind) {
-        Products products = productService.findProducts(textfind);
+    public Optional<Products> findProducts(@PathVariable String textfind) {
+        Optional<Products> products = productService.findProducts(textfind);
         return products;
     }
 

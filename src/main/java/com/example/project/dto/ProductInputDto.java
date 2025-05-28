@@ -1,22 +1,17 @@
 package com.example.project.dto;
 
-import com.example.project.model.Products;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
-/**
- * DTO for {@link Products}
- */
 @Getter
 @Setter
-@AllArgsConstructor
-public class ProductsDto implements Serializable {
-    @NotBlank(message = "Not Blank")
+public class ProductInputDto implements Serializable {
+    private int productId;
     private String name;
-    @NotBlank(message = "Not Blank")
     private String barcode;
     private String image;
     private double weight;
@@ -24,9 +19,10 @@ public class ProductsDto implements Serializable {
     private double width;
     private double length;
     private double price;
-    private boolean isDeleted;
     private Integer status;
 
     @JsonProperty("users_id")
     private Integer usersId;
+
+    private Integer quantity;
 }
