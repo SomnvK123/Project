@@ -32,7 +32,7 @@ public class Products extends Auditing{
     private Integer status;
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "users_id")
     private Users users;
 

@@ -31,6 +31,10 @@ public class Packages extends Auditing {
     private boolean isDeleted = false;
     private Integer status;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "users_id")
+    private Users users;
+
     // Additional fields or methods can be added here if necessary
     @OneToMany(mappedBy = "aPackage")
     private List<PackageProducts> packageProducts;

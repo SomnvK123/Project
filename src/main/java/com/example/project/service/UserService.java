@@ -3,9 +3,6 @@ package com.example.project.service;
 import com.example.project.model.Users;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import com.example.project.repository.UsersRepository;
 
@@ -17,7 +14,6 @@ public class UserService  {
     @Autowired
     private UsersRepository usersRepository;
 
-    private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserService.class);
 
     @Transactional
     public void batchRegister (List<Users> users) {
@@ -36,30 +32,19 @@ public class UserService  {
         return usersRepository.findByTel(tel);
     }
 
+    public Users login(String tel, String password) {
+        Users user = usersRepository.findByTel(tel);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
+        }
+        return null; // Invalid credentials
+    }
+
     public Users findByName(String name) {
         return usersRepository.findByName(name);
     }
 
     public List<Users> getAllUsers() {
         return usersRepository.getAllUsers();
-    }
-
-    public String getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return null;
-        }
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof Users) {
-            logger.info("Found user: {}", principal);
-            Users user = (Users) principal;
-            return user.getName();
-        } else if (principal instanceof UserDetails) {
-            logger.info("Found UserDetails: {}", principal);
-            UserDetails userDetails = (UserDetails) principal;
-            return userDetails.getUsername();
-        } else {
-            return principal.toString();
-        }
     }
 }

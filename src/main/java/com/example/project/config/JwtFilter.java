@@ -49,9 +49,9 @@ public class JwtFilter extends org.springframework.web.filter.OncePerRequestFilt
             }
 
             try {
-                String username = jwtUtil.extractUsername(token);
-                if (username != null && jwtUtil.validateToken(token, username)) {
-                    Users user = usersRepository.findByName(username);
+                String tel = jwtUtil.extractUsername(token);
+                if (tel != null && jwtUtil.validateToken(token, tel)) {
+                    Users user = usersRepository.findByTel(tel);
                     if (user != null) {
                         List<SimpleGrantedAuthority> authorities =
                                 List.of(new SimpleGrantedAuthority(user.getRole()));
@@ -59,7 +59,7 @@ public class JwtFilter extends org.springframework.web.filter.OncePerRequestFilt
                                 new UsernamePasswordAuthenticationToken(user, null, authorities);
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                         request.setAttribute("user", user);
-                        logger.info("User '{}' đã xác thực thành công", username);
+                        logger.info("User với tel '{}' đã xác thực thành công", tel);
                     }
                 }
             } catch (Exception e) {
@@ -68,7 +68,6 @@ public class JwtFilter extends org.springframework.web.filter.OncePerRequestFilt
         } else {
             logger.warn("Không tìm thấy header Authorization hoặc thiếu Bearer");
         }
-
 
         chain.doFilter(request, response);
     }

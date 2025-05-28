@@ -1,17 +1,20 @@
 package com.example.project.controller;
 
+import com.example.project.config.JwtFilter;
 import com.example.project.config.JwtUtil;
 import com.example.project.dto.AuthDto;
 import com.example.project.model.Users;
+import com.example.project.repository.UsersRepository;
 import com.example.project.service.UserService;
+import com.example.project.userdetail.UserDetailService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpHeaders;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -23,6 +26,13 @@ public class UserController {
 
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private UsersRepository usersRepository;
+
+    @Autowired
+    private UserDetailService userDetailService;
+
+    private final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody Users users) {
@@ -39,29 +49,47 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Users users) {
-        Users existingUser = userService.findByTel(users.getTel());
-        if (existingUser == null || !existingUser.getPassword().equals(users.getPassword())) {
+    public ResponseEntity<?> login(@Valid @RequestBody AuthDto authDto) {
+        Users user = userService.login(authDto.getTel(), authDto.getPassword());
+        if (user != null) {
+            String token = jwtUtil.generateJwtToken(user);
+            logger.info("User {} logged in successfully", user.getTel());
+
+            // Tạo DTO trả về chỉ gồm token + info (không trả password)
+            AuthDto response = new AuthDto(
+                    token,
+                    user.getTel(),
+                    user.getPassword(),
+                    user.getName(),
+                    user.getAddress(),
+                    user.isStatus(),
+                    user.getRole()
+                    );
+
+            return ResponseEntity.ok(response);
+        } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
-        String token = jwtUtil.generateJwtToken(existingUser);
-        if (token == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-        }
-        AuthDto authDto = new AuthDto(token,
-                existingUser.getName(),
-                existingUser.getRole(),
-                existingUser.getTel(),
-                existingUser.getPassword(),
-                existingUser.isStatus(),
-                existingUser.getRole());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(authDto);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<Users>> getAllUsers() {
         List<Users> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/current-user")
+    public ResponseEntity<Users> getCurrentUser() {
+        String username = userDetailService.getCurrentUser();
+        if (username != null) {
+            Users user = usersRepository.findByTel(username);
+            if (user != null) {
+                return ResponseEntity.ok(user);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 }

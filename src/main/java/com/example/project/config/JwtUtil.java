@@ -3,7 +3,6 @@ package com.example.project.config;
 import com.example.project.model.Users;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +30,7 @@ public class JwtUtil {
 
     public String generateJwtToken(Users users) {
         return Jwts.builder()
-                .setSubject(users.getName())
+                .setSubject(users.getTel())
                 .claim("role", users.getRole())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
@@ -39,9 +38,9 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean validateToken(String token, String username) {
-        String tokenUsername = extractUsername(token);
-        return tokenUsername != null && tokenUsername.equals(username) && !isTokenExpire(token);
+    public boolean validateToken(String token, String tel) {
+        String tokenTel = extractUsername(token);
+        return tokenTel != null && tokenTel.equals(tel) && !isTokenExpire(token);
     }
 
     public String extractUsername(String token) {
