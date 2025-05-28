@@ -84,4 +84,13 @@ public class PackageService {
             }
         }
     }
+
+    public void updatePackageStatus(int id, int newStatus) {
+        // Check if the package exists
+        if (!packagesRepository.existsById(id)) {
+            throw new IllegalArgumentException("Package with ID " + id + " does not exist.");
+        }
+        // Update the package status using the repository method
+        packagesRepository.updatePackageStatus(id, newStatus);
+    }
 }
