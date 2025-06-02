@@ -13,6 +13,8 @@ import com.example.project.repository.UsersRepository;
 import com.example.project.userdetail.UserDetailService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -138,4 +140,15 @@ public class PackageService {
         // Update the package status using the repository method
         packagesRepository.updatePackageStatus(id, newStatus);
     }
+
+    // Service Pageable packages limit 20 filter by id or tel
+    public Page<Packages> findPackageByIdOrCustomerTel(Pageable pageable, String textfindP) {
+        if (textfindP.startsWith("0")) {
+            return packagesRepository.findPackageByCustomerTel(pageable, textfindP);
+        } else {
+            int id = Integer.parseInt(textfindP);
+            return packagesRepository.findPackageById(pageable, id);
+        }
+    }
+
 }
