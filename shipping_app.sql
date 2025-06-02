@@ -58,7 +58,6 @@ CREATE TABLE products (
     FOREIGN KEY (users_id) REFERENCES users(id)
 );
 
-describe packages;
 
 -- 1.3. Bảng packages
 CREATE TABLE packages (
@@ -154,6 +153,73 @@ SELECT count(*)
 FROM package_products pp
 JOIN packages p ON pp.package_id = p.id
 WHERE pp.product_id = 3 AND p.status IN (5, 7, 11);
+
+
+SELECT
+            p.id AS package_id,
+            p.customer_name,
+            p.customer_address,
+            p.customer_tel,
+            p.pick_money,
+            p.value,
+            p.ship_money,
+            p.extra_fee,
+            p.weight,
+            p.status,
+            p.created_at,
+            pr.id AS product_id,
+            pr.name AS product_name,
+            pr.barcode,
+            pr.price,
+            pp.quantity
+FROM packages p
+JOIN package_products pp ON p.id = pp.package_id
+JOIN products pr ON pp.product_id = pr.id
+WHERE pp.id = 14;
+
+
+        SELECT
+            p.id AS package_id,
+            p.customer_name,
+            p.customer_address,
+            p.customer_tel,
+            p.pick_money,
+            p.value,
+            p.ship_money,
+            p.extra_fee,
+            p.weight,
+            p.status,
+            p.created_at,
+            pr.id AS product_id,
+            pr.name AS product_name,
+            pr.barcode,
+            pr.price,
+            pp.quantity
+        FROM packages p
+        JOIN package_products pp ON p.id = pp.package_id
+        JOIN products pr ON pp.product_id = pr.id
+        ORDER BY p.id;
+
+
+SELECT
+    p.id AS package_id,
+    p.customer_name,
+    p.customer_address,
+    p.customer_tel,
+    p.value,
+    p.weight,
+    pr.id AS product_id,
+    pr.name AS product_name,
+    pr.barcode,
+    pr.price,
+    pr.weight AS product_weight,
+    pp.quantity
+FROM packages p
+JOIN package_products pp ON p.id = pp.package_id
+JOIN products pr ON pp.product_id = pr.id
+WHERE p.customer_tel = 0901234567;
+
+
 
 
 

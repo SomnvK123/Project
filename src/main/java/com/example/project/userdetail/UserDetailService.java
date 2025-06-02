@@ -42,7 +42,7 @@ public class UserDetailService {
 
         if (principal instanceof Users) {
             Users user = (Users) principal;
-            return user.getId(); // Trả về id của người dùng
+            return user.getId();
         } else {
             return null;
         }

@@ -1,6 +1,5 @@
 package com.example.project.service;
 
-import com.example.project.config.SecurityUtil;
 import com.example.project.dto.PackagesDto;
 import com.example.project.dto.ProductInputDto;
 import com.example.project.model.PackageProducts;
@@ -11,7 +10,6 @@ import com.example.project.repository.PackageProductsRepository;
 import com.example.project.repository.PackagesRepository;
 import com.example.project.repository.ProductsRepository;
 import com.example.project.repository.UsersRepository;
-import com.example.project.userdetail.CustomUserDetails;
 import com.example.project.userdetail.UserDetailService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +82,6 @@ public class PackageService {
 
         for (ProductInputDto pDto : dto.getProducts()) {
             Optional<Products> productOpt = Optional.empty();
-
             if (pDto.getBarcode() != null) {
                 productOpt = productsRepository.findByBarcode(pDto.getBarcode());
             }

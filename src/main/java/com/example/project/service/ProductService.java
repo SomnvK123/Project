@@ -5,6 +5,8 @@ import com.example.project.model.Products;
 import com.example.project.model.Users;
 import com.example.project.repository.PackagesRepository;
 import com.example.project.repository.ProductsRepository;
+import com.example.project.repository.UsersRepository;
+import com.example.project.userdetail.UserDetailService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,12 @@ public class ProductService {
 
     @Autowired
     private PackagesRepository packagesRepository;
+
+    @Autowired
+    private UserDetailService userDetailService;
+
+    @Autowired
+    private UsersRepository usersRepository;
 
     public Page<Products> getAllProducts(Pageable pageable) {
         return productsRepository.findAll(pageable);
@@ -54,6 +62,10 @@ public class ProductService {
     }
 
     private Products getProducts(ProductsDto dto) {
+        Integer currentUserId = userDetailService.getCurrentUserId();
+        Users user = usersRepository.findById(currentUserId)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
         Products product = new Products();
         product.setName(dto.getName());
         product.setBarcode(dto.getBarcode());
@@ -65,11 +77,7 @@ public class ProductService {
         product.setPrice(dto.getPrice());
         product.setDeleted(dto.isDeleted());
         product.setStatus(dto.getStatus());
-        if (dto.getUsersId() != null) {
-            Users user = new Users();
-            user.setId(dto.getUsersId());
-            product.setUsers(user);
-        }
+        product.setUsers(user);
         return product;
     }
 
