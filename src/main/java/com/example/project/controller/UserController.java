@@ -19,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class UserController {
 
     @Autowired
@@ -42,7 +43,7 @@ public class UserController {
         }
         users.setRole("USER");
         users.setStatus(true);
-        userService.batchRegister(List.of(users));
+        userService.registerBatch(List.of(users));
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 "User registered successfully"
         );
@@ -55,16 +56,7 @@ public class UserController {
             String token = jwtUtil.generateJwtToken(user);
             logger.info("User {} logged in successfully", user.getTel());
 
-            // Tạo DTO trả về chỉ gồm token + info (không trả password)
-            AuthDto response = new AuthDto(
-                    token,
-                    user.getTel(),
-                    user.getPassword(),
-                    user.getName(),
-                    user.getAddress(),
-                    user.isStatus(),
-                    user.getRole()
-                    );
+            AuthDto response = new AuthDto(token, user.getTel(), user.getPassword(), user.getName(), user.getAddress(), user.isStatus(), user.getRole());
 
             return ResponseEntity.ok(response);
         } else {

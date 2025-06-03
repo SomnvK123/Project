@@ -43,15 +43,15 @@ public class JwtFilter extends org.springframework.web.filter.OncePerRequestFilt
             String token = authHeader.substring(7).trim();
 
             if (token.isEmpty() || token.split("\\.").length != 3) {
-                logger.error("Token không hợp lệ (rỗng hoặc sai định dạng): '{}'", token);
+                logger.error("Invalid token (empty or wrong format): '{}'", token);
                 chain.doFilter(request, response);
                 return;
             }
 
             try {
-                String tel = jwtUtil.extractUsername(token);
-                if (tel != null && jwtUtil.validateToken(token, tel)) {
-                    Users user = usersRepository.findByTel(tel);
+                String phoneNumber = jwtUtil.extractUsername(token);
+                if (phoneNumber != null && jwtUtil.validateToken(token, phoneNumber)) {
+                    Users user = usersRepository.findByTel(phoneNumber);
                     if (user != null) {
                         List<SimpleGrantedAuthority> authorities =
                                 List.of(new SimpleGrantedAuthority(user.getRole()));
@@ -59,14 +59,14 @@ public class JwtFilter extends org.springframework.web.filter.OncePerRequestFilt
                                 new UsernamePasswordAuthenticationToken(user, null, authorities);
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                         request.setAttribute("user", user);
-                        logger.info("User với tel '{}' đã xác thực thành công", tel);
+                        logger.info("User with phone '{}' has been successfully authenticated", phoneNumber);
                     }
                 }
             } catch (Exception e) {
-                logger.error("Lỗi xác thực token: ", e);
+                logger.error("Token authentication error: ", e);
             }
         } else {
-            logger.warn("Không tìm thấy header Authorization hoặc thiếu Bearer");
+            logger.warn("Authorization header not found or missing 'Bearer'");
         }
 
         chain.doFilter(request, response);

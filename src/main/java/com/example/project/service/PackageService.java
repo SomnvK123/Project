@@ -66,7 +66,7 @@ public class PackageService {
         pkg.setPickMoney(dto.getPickMoney());
         pkg.setValue(dto.getValue());
         pkg.setShipMoney(dto.getShipMoney());
-        pkg.setStatus(dto.getStatus());
+        pkg.setStatus(0);
         pkg.setUsers(user);
 
         double totalWeight = 0;
@@ -78,6 +78,8 @@ public class PackageService {
 
         calculateExtraFee(pkg);
         packagesRepository.save(pkg);
+        System.out.println("Saved package ID: " + pkg.getId());
+
 
         List<Products> productsToSave = new ArrayList<>();
         List<PackageProducts> packageProducts = new ArrayList<>();
@@ -111,7 +113,7 @@ public class PackageService {
                 product.setWidth(pDto.getWidth());
                 product.setLength(pDto.getLength());
                 product.setPrice(pDto.getPrice());
-                product.setStatus(pDto.getStatus());
+                product.setStatus(0); // Mặc định trạng thái là 0 (có thể thay đổi theo yêu cầu)
                 product.setUsers(user);
             }
 

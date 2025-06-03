@@ -19,11 +19,13 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
+    // Insert multiple products (Admin only)
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/insert")
     @Transactional
@@ -32,39 +34,40 @@ public class ProductController {
         return ResponseEntity.ok("Products inserted successfully");
     }
 
+    // Retrieve all products with pagination and sorting
     @GetMapping("/all")
     public ResponseEntity<Page<Products>> getAllProducts(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "sort", defaultValue = "id, asc") String[] sort) {
+            @RequestParam(value = "sort", defaultValue = "id,asc") String[] sort) {
         Sort.Direction direction = Sort.Direction.fromString(sort[1]);
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort[0]));
         Page<Products> products = productService.getAllProducts(pageable);
         return ResponseEntity.ok(products);
     }
 
+    // Find a product by barcode or name
     @GetMapping("/find/{textfind}")
     public Optional<Products> findProducts(@PathVariable String textfind) {
-        Optional<Products> products = productService.findProducts(textfind);
-        return products;
+        return productService.findProducts(textfind);
     }
 
+    // Update product details
     @PutMapping("/update/{id}")
     @Transactional
     public ResponseEntity<?> updateProducts(@RequestBody ProductsDto productDto, @PathVariable Integer id) {
-        Products product = productService.updateProducts(id, productDto);
-        if (product == null) {
-            return ResponseEntity.status(404).body("Product not found");
+        Products updatedProduct = productService.updateProducts(id, productDto);
+        if (updatedProduct == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
         }
-        return ResponseEntity.status(HttpStatus.OK)
-                .body("Product updated successfully: " + product);
+        return ResponseEntity.ok("Product updated successfully: " + updatedProduct);
     }
 
+    // Soft delete a product
     @PutMapping("/softdelete/{id}")
     @Transactional
     public ResponseEntity<?> softDeleteProducts(@PathVariable Integer id) {
         productService.softDeleteProducts(id);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body("Product deleted successfully");
+        return ResponseEntity.ok("Product deleted successfully");
     }
 }

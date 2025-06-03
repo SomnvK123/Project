@@ -9,6 +9,12 @@ select * from package_products;
    SELECT CONSTRAINT_NAME, CHECK_CLAUSE
    FROM INFORMATION_SCHEMA.CHECK_CONSTRAINTS
    WHERE CONSTRAINT_NAME = 'products_chk_2';
+   
+      SELECT CONSTRAINT_NAME, CHECK_CLAUSE
+   FROM INFORMATION_SCHEMA.CHECK_CONSTRAINTS
+   WHERE CONSTRAINT_NAME = 'packages_chk_1';
+   
+
 
 -- Xóa bảng liên kết trước (do có foreign key đến các bảng khác)
 DROP TABLE IF EXISTS package_products;
@@ -218,57 +224,3 @@ FROM packages p
 JOIN package_products pp ON p.id = pp.package_id
 JOIN products pr ON pp.product_id = pr.id
 WHERE p.customer_tel = 0901234567;
-
-drop table packagess;
-drop table id_counter; 
-
-CREATE TABLE packagess (
-    id VARCHAR(10) PRIMARY KEY,
-    name VARCHAR(100),
-    description TEXT
-);
-
-CREATE TABLE id_counter (
-    prefix VARCHAR(10) PRIMARY KEY,
-    current_value INT NOT NULL
-);
-
--- Khởi động giá trị ban đầu cho tiền tố 'P'
-INSERT INTO id_counter (prefix, current_value) VALUES ('P', 0);
-
-DELIMITER //
-
-CREATE PROCEDURE insert_package (
-    IN package_name VARCHAR(100),
-    IN package_description TEXT
-)
-BEGIN
-    DECLARE new_id VARCHAR(10);
-
-    -- Tăng giá trị counter
-    UPDATE id_counter SET current_value = current_value + 1 WHERE prefix = 'P';
-
-    -- Lấy giá trị mới và sinh id theo định dạng
-    SELECT CONCAT('P', LPAD(current_value, 2, '0')) INTO new_id FROM id_counter WHERE prefix = 'P';
-
-    -- Chèn dữ liệu vào bảng packages
-    INSERT INTO packagess (id, name, description)
-    VALUES (new_id, package_name, package_description);
-END //
-
-DELIMITER ;
-
-CALL insert_package('Package A', 'Mô tả về Package A');
-CALL insert_package('Package B', 'Mô tả về Package B');
-
-drop procedure insert_package;
-
-select * from packagess;
-
-
-
-
-
-
-
-

@@ -28,10 +28,10 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateJwtToken(Users users) {
+    public String generateJwtToken(Users user) {
         return Jwts.builder()
-                .setSubject(users.getTel())
-                .claim("role", users.getRole())
+                .setSubject(user.getTel())
+                .claim("role", user.getRole())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(key)
@@ -40,33 +40,33 @@ public class JwtUtil {
 
     public boolean validateToken(String token, String tel) {
         String tokenTel = extractUsername(token);
-        return tokenTel != null && tokenTel.equals(tel) && !isTokenExpire(token);
+        return tokenTel != null && tokenTel.equals(tel) && !isTokenExpired(token);
     }
 
     public String extractUsername(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+            Claims claims = parseClaims(token);
             return claims.getSubject();
         } catch (Exception e) {
             return null;
         }
     }
 
-    public boolean isTokenExpire(String token) {
+    public boolean isTokenExpired(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+            Claims claims = parseClaims(token);
             Date expiration = claims.getExpiration();
             return expiration.before(new Date());
         } catch (Exception e) {
-            throw new RuntimeException("Token expired or invalid", e);
+            return true; // Treat invalid or expired tokens as expired
         }
+    }
+
+    private Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
