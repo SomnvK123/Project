@@ -134,13 +134,54 @@ public class PackageService {
         packageProductsRepository.saveAll(packageProducts);
     }
 
-    public void updatePackageStatus(int id, int newStatus) {
-        // Check if the package exists
-        if (!packagesRepository.existsById(id)) {
-            throw new IllegalArgumentException("Package with ID " + id + " does not exist.");
+    // Update package status with validation
+    // 1
+//    public void updatePackageStatus(int id, int newStatus) {
+//        // Check if the package exists
+//        if (!packagesRepository.existsById(id)) {
+//            throw new IllegalArgumentException("Package with ID " + id + " does not exist.");
+//        }
+//        // Update the package status using the repository method
+//        packagesRepository.updatePackageStatus(id, newStatus);
+//    }
+
+    // 2
+//    public boolean updatePackageStatus(int id, int newStatus) {
+//        // Validate allowed newStatus values
+//        List<Integer> allowedStatuses = List.of(3, 5, 7, 11, 14, 17, 20, -1);
+//        if (!allowedStatuses.contains(newStatus)) {
+//            throw new IllegalArgumentException("Invalid newStatus value: " + newStatus);
+//        }
+//        if (!packagesRepository.existsById(id)) {
+//            throw new IllegalArgumentException("Package with ID " + id + " does not exist.");
+//        }
+//        // Update the package status using the repository method
+//        int updated = packagesRepository.updatePackageStatus(id, newStatus);
+//        return updated > 0;
+//    }
+
+    // 3
+    public boolean updatePackageStatus(int id, int newStatus) {
+        // Only allow status transitions as defined in the query
+        Packages pkg = packagesRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Package with ID " + id + " does not exist."));
+        int oldStatus = pkg.getStatus();
+
+        boolean isValid =
+                (oldStatus == 0 && newStatus == 3) ||
+                        (oldStatus == 3 && newStatus == 5) ||
+                        (oldStatus == 5 && newStatus == 7) ||
+                        (oldStatus == 7 && (newStatus == 11 || newStatus == 14 || newStatus == -1)) ||
+                        (oldStatus == 14 && (newStatus == 11 || newStatus == 20)) ||
+                        (oldStatus == 11 && newStatus == 17) ||
+                        ((oldStatus == 0 || oldStatus == 3 || oldStatus == 5) && newStatus == -1);
+
+        if (!isValid) {
+            throw new IllegalArgumentException("Invalid status transition: " + oldStatus + " -> " + newStatus);
         }
-        // Update the package status using the repository method
-        packagesRepository.updatePackageStatus(id, newStatus);
+
+        int updated = packagesRepository.updatePackageStatus(id, newStatus);
+        return updated > 0;
     }
 
     // Service Pageable packages limit 20 filter by id or tel

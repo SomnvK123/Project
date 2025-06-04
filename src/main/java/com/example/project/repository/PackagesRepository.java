@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface PackagesRepository extends JpaRepository<Packages, Integer> {
 
@@ -32,7 +30,7 @@ public interface PackagesRepository extends JpaRepository<Packages, Integer> {
                 END
                 WHERE id = ?1
             """)
-    void updatePackageStatus(int id, int newStatus);
+    int updatePackageStatus(int id, int newStatus);
 
     @Query(nativeQuery = true, value = "SELECT * FROM packages WHERE id LIKE CONCAT('%', ?1, '%')")
     Page<Packages> findPackageById(Pageable pageable, int id);
