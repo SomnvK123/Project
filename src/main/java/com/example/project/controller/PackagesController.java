@@ -32,8 +32,12 @@ public class PackagesController {
     @Transactional
     public ResponseEntity<String> updatePackageStatus(@PathVariable int id, @PathVariable int newStatus) {
         try {
-            packageService.updatePackageStatus(id, newStatus);
-            return ResponseEntity.ok("Package status updated successfully.");
+            boolean updated = packageService.updatePackageStatus(id, newStatus);
+            if (updated) {
+                return ResponseEntity.ok("Package status updated successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("No package status was updated.");
+            }
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -46,7 +50,7 @@ public class PackagesController {
             @PathVariable String textfindP,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "20") int size,
-            @RequestParam(value = "sort", defaultValue = "id, asc") String[] sort){
+            @RequestParam(value = "sort", defaultValue = "id, asc") String[] sort) {
         Sort.Direction direction = Sort.Direction.fromString(sort[1]);
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort[0]));
         Page<Packages> packages = packageService.findPackageByIdOrCustomerTel(pageable, textfindP);
